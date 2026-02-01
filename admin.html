@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - SPPG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #60a5fa;
+            --light-blue: #dbeafe;
+            --accent-gold: #fbbf24;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Login Container */
+        .login-container {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-admin {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-admin img {
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .logo-admin h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-blue);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-admin p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid var(--light-blue);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.3);
+        }
+
+        .error-message {
+            background: #fee;
+            color: var(--danger);
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+            border-left: 4px solid var(--danger);
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Admin Dashboard */
+        .admin-dashboard {
+            display: none;
+            background: var(--white);
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .admin-dashboard.active {
+            display: block;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+        }
+
+        .btn-logout {
+            padding: 0.7rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border: 2px solid var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--white);
+            color: var(--primary-blue);
+        }
+
+        .admin-container {
+            padding: 3rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--light-blue);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-size: 1rem;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .section-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid var(--light-blue);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .btn-save {
+            padding: 0.9rem 2.5rem;
+            background: var(--success);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-delete {
+            padding: 0.6rem 1.5rem;
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: var(--success);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--success);
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Event List */
+        .event-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .event-item {
+            background: var(--light-blue);
+            padding: 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            box-shadow: 0 8px 20px rgba(30, 58, 138, 0.15);
+        }
+
+        .event-content {
+            flex: 1;
+        }
+
+        .event-content h3 {
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .event-content .event-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-content p {
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .preview-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.7rem 2rem;
+            background: var(--secondary-blue);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .preview-link:hover {
+            background: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 2rem;
+            }
+
+            .admin-container {
+                padding: 2rem 5%;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .event-item {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <div class="logo-admin">
+            <img src="Logo_Badan_Gizi_Nasional__2024_.png" alt="Logo SPPG">
+            <h1>Admin Panel</h1>
+            <p>SPPG Pinrang Paleteang Macinnae</p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            Username atau password salah!
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required placeholder="Masukkan username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Masukkan password">
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding: 1rem; background: #fef3c7; border-radius: 8px; font-size: 0.9rem;">
+            <strong>Login Default:</strong><br>
+            Username: <code>admin</code><br>
+            Password: <code>sppg2025</code>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard">
+        <div class="admin-header">
+            <h1>🎛️ Admin Dashboard - SPPG</h1>
+            <div style="display: flex; gap: 1rem;">
+                <a href="index.html" target="_blank" class="btn-logout" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                    🌐 Lihat Website
+                </a>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="admin-container">
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalEvents">0</h3>
+                    <p>Total Berita/Event</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalGallery">6</h3>
+                    <p>Item Galeri</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="lastUpdate">-</h3>
+                    <p>Update Terakhir</p>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchTab('events')">📰 Berita & Event</button>
+                <button class="tab-btn" onclick="switchTab('company')">🏢 Info Perusahaan</button>
+                <button class="tab-btn" onclick="switchTab('contact')">📞 Kontak</button>
+                <button class="tab-btn" onclick="switchTab('settings')">⚙️ Pengaturan</button>
+            </div>
+
+            <!-- Tab Content: Events -->
+            <div class="tab-content active" id="eventsTab">
+                <div class="section-card">
+                    <h2>Tambah Berita / Event Baru</h2>
+                    <div class="success-message" id="successMessageEvent"></div>
+                    
+                    <form id="eventForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="eventTitle">Judul Berita/Event *</label>
+                                <input type="text" id="eventTitle" required placeholder="Misal: Catering untuk Pernikahan Besar">
+                            </div>
+                            <div class="form-group">
+                                <label for="eventDate">Tanggal *</label>
+                                <input type="date" id="eventDate" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventDescription">Deskripsi *</label>
+                            <textarea id="eventDescription" required placeholder="Ceritakan detail tentang event atau berita ini..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-save">💾 Simpan Event</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <h2>Daftar Berita & Event</h2>
+                    <div class="event-list" id="eventList">
+                        <p style="color: var(--text-light); text-align: center; padding: 2rem;">Belum ada event. Tambahkan event pertama Anda!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Company Info -->
+            <div class="tab-content" id="companyTab">
+                <div class="section-card">
+                    <h2>Informasi Perusahaan</h2>
+                    <div class="success-message" id="successMessageCompany"></div>
+                    
+                    <form id="companyForm">
+                        <div class="form-group">
+                            <label for="companyAbout">Tentang SPPG</label>
+                            <textarea id="companyAbout" placeholder="Deskripsi lengkap tentang SPPG...">SPPG (Satuan Pelayanan Pemenuhan Gizi) adalah lembaga yang berkomitmen untuk memenuhi kebutuhan gizi masyarakat melalui layanan catering berkualitas tinggi. Kami berdiri sejak 4 Agustus 2025 dengan visi menyediakan makanan sehat, bergizi, dan lezat.</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="companyPartner">Tentang Kerjasama dengan Alago Food</label>
+                            <textarea id="companyPartner" placeholder="Deskripsi kerjasama...">Kami bangga bermitra dengan Alago Food Catering, mitra terpercaya yang memiliki pengalaman luas dalam industri kuliner. Bersama-sama, kami menghadirkan menu-menu berkualitas dengan cita rasa khas yang memanjakan lidah.</textarea>
+                        </div>
+
+                        <button type="submit" class="btn-save">💾 Update Info Perusahaan</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab Content: Contact -->
+            <div class="tab-content" id="contactTab">
+                <div class="section-card">
+                    <h2>Informasi Kontak</h2>
+                    <div class="success-message" id="successMessageContact"></div>
+                    
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactPhone">WhatsApp / Telepon</label>
+                                <input type="text" id="contactPhone" value="082189820022">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email</label>
+                                <input type="email" id="contactEmail" placeholder="info@sppgpinrang.com">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactInstagram">Instagram</label>
+                                <input type="text" id="contactInstagram" value="@sppg_paleteang03">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactAddress">Alamat</label>
+                                <input type="text" id="contactAddress" value="Jl. Poros Pinrang - Polman">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-save">💾 Update Kontak</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab Content: Settings -->
+            <div class="tab-content" id="settingsTab">
+                <div class="section-card">
+                    <h2>Pengaturan Akun</h2>
+                    <div class="success-message" id="successMessageSettings"></div>
+                    
+                    <form id="settingsForm">
+                        <div class="form-group">
+                            <label for="newUsername">Username Baru</label>
+                            <input type="text" id="newUsername" placeholder="Username saat ini: admin">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newPassword">Password Baru</label>
+                                <input type="password" id="newPassword" placeholder="Kosongkan jika tidak ingin mengubah">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Konfirmasi Password</label>
+                                <input type="password" id="confirmPassword" placeholder="Konfirmasi password baru">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-save">🔒 Update Pengaturan</button>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <h2>Preview Website</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">
+                        Lihat bagaimana website Anda tampil untuk pengunjung
+                    </p>
+                    <a href="index.html" target="_blank" class="preview-link">🌐 Buka Website</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default credentials (bisa diubah nanti)
+        let credentials = {
+            username: localStorage.getItem('admin_username') || 'admin',
+            password: localStorage.getItem('admin_password') || 'sppg2025'
+        };
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMessage');
+
+            if (username === credentials.username && password === credentials.password) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminDashboard').classList.add('active');
+                loadDashboardData();
+            } else {
+                errorMsg.classList.add('show');
+                setTimeout(() => errorMsg.classList.remove('show'), 3000);
+            }
+        });
+
+        // Logout
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('adminDashboard').classList.remove('active');
+                document.getElementById('loginForm').reset();
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // Load dashboard data
+        function loadDashboardData() {
+            loadEvents();
+            updateStats();
+            loadCompanyInfo();
+            loadContactInfo();
+        }
+
+        // Event Management
+        let events = JSON.parse(localStorage.getItem('sppg_events')) || [];
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newEvent = {
+                id: Date.now(),
+                title: document.getElementById('eventTitle').value,
+                date: document.getElementById('eventDate').value,
+                description: document.getElementById('eventDescription').value,
+                createdAt: new Date().toISOString()
+            };
+
+            events.unshift(newEvent);
+            localStorage.setItem('sppg_events', JSON.stringify(events));
+
+            showSuccess('successMessageEvent', 'Event berhasil ditambahkan! ✅');
+            document.getElementById('eventForm').reset();
+            loadEvents();
+            updateStats();
+        });
+
+        function loadEvents() {
+            const eventList = document.getElementById('eventList');
+            
+            if (events.length === 0) {
+                eventList.innerHTML = '<p style="color: var(--text-light); text-align: center; padding: 2rem;">Belum ada event. Tambahkan event pertama Anda!</p>';
+                return;
+            }
+
+            eventList.innerHTML = events.map(event => `
+                <div class="event-item">
+                    <div class="event-content">
+                        <h3>${event.title}</h3>
+                        <div class="event-date">📅 ${formatDate(event.date)}</div>
+                        <p>${event.description}</p>
+                    </div>
+                    <button class="btn-delete" onclick="deleteEvent(${event.id})">🗑️ Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteEvent(id) {
+            if (confirm('Yakin ingin menghapus event ini?')) {
+                events = events.filter(e => e.id !== id);
+                localStorage.setItem('sppg_events', JSON.stringify(events));
+                loadEvents();
+                updateStats();
+                showSuccess('successMessageEvent', 'Event berhasil dihapus! ✅');
+            }
+        }
+
+        // Company Info Management
+        document.getElementById('companyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const companyInfo = {
+                about: document.getElementById('companyAbout').value,
+                partner: document.getElementById('companyPartner').value
+            };
+
+            localStorage.setItem('sppg_company', JSON.stringify(companyInfo));
+            showSuccess('successMessageCompany', 'Informasi perusahaan berhasil diupdate! ✅');
+            updateStats();
+        });
+
+        function loadCompanyInfo() {
+            const companyInfo = JSON.parse(localStorage.getItem('sppg_company'));
+            if (companyInfo) {
+                document.getElementById('companyAbout').value = companyInfo.about || '';
+                document.getElementById('companyPartner').value = companyInfo.partner || '';
+            }
+        }
+
+        // Contact Info Management
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const contactInfo = {
+                phone: document.getElementById('contactPhone').value,
+                email: document.getElementById('contactEmail').value,
+                instagram: document.getElementById('contactInstagram').value,
+                address: document.getElementById('contactAddress').value
+            };
+
+            localStorage.setItem('sppg_contact', JSON.stringify(contactInfo));
+            showSuccess('successMessageContact', 'Informasi kontak berhasil diupdate! ✅');
+            updateStats();
+        });
+
+        function loadContactInfo() {
+            const contactInfo = JSON.parse(localStorage.getItem('sppg_contact'));
+            if (contactInfo) {
+                document.getElementById('contactPhone').value = contactInfo.phone || '';
+                document.getElementById('contactEmail').value = contactInfo.email || '';
+                document.getElementById('contactInstagram').value = contactInfo.instagram || '';
+                document.getElementById('contactAddress').value = contactInfo.address || '';
+            }
+        }
+
+        // Settings Management
+        document.getElementById('settingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newUsername = document.getElementById('newUsername').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword && newPassword !== confirmPassword) {
+                alert('Password dan konfirmasi password tidak cocok!');
+                return;
+            }
+
+            if (newUsername) {
+                localStorage.setItem('admin_username', newUsername);
+                credentials.username = newUsername;
+            }
+
+            if (newPassword) {
+                localStorage.setItem('admin_password', newPassword);
+                credentials.password = newPassword;
+            }
+
+            showSuccess('successMessageSettings', 'Pengaturan berhasil diupdate! ✅');
+            document.getElementById('settingsForm').reset();
+        });
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalEvents').textContent = events.length;
+            
+            const lastUpdateTime = localStorage.getItem('sppg_last_update');
+            if (lastUpdateTime) {
+                const date = new Date(lastUpdateTime);
+                document.getElementById('lastUpdate').textContent = date.toLocaleDateString('id-ID');
+            } else {
+                document.getElementById('lastUpdate').textContent = 'Hari ini';
+            }
+            
+            localStorage.setItem('sppg_last_update', new Date().toISOString());
+        }
+
+        // Utility functions
+        function showSuccess(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+            setTimeout(() => element.classList.remove('show'), 4000);
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        // Initialize
+        if (events.length > 0) {
+            updateStats();
+        }
+    </script>
+</body>
+</html>
